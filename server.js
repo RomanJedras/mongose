@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://<dbuser>:<dbpassword>@ds147497.mlab.com:47497/kurs_node_gupaaf', {
+mongoose.connect('mongodb+srv://ds149947.mlab.com:49947/kodilla-test', {
 	useMongoClient: true
 }).then(()=>{
 	console.log('MongoDB is connected')
