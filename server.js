@@ -2,8 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/nodeappdatabase', {
+mongoose.connect('mongodb://<dbuser>:<dbpassword>@ds147497.mlab.com:47497/kurs_node_gupaaf', {
 	useMongoClient: true
+}).then(()=>{
+	console.log('MongoDB is connected')
+}).catch(err=>{
+	console.log('MongoDB connection unsuccessful, retry after 5 seconds.');
+	setTimeout(connectWithRetry, 5000)
 });
 
 //new user Schema
