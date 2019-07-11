@@ -2,22 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 mongoose.Promise = global.Promise;
-db = "mongodb://<dbuser>:<dbpassword>@ds249967.mlab.com:49967/kodilla-test";
 
-
-const connectWithRetry = () => {
-	console.log('MongoDB connection with retry')
-	mongoose.connect('mongodb+srv://romanjedras:beaf7CDQW123@cluster0-g742u.mongodb.net/test?retryWrites=true&w=majority,
-		options).then(()=>{
-		console.log('MongoDB is connected')
-	}).catch(err=>{
-		console.log('MongoDB connection unsuccessful, retry after 5 seconds.')
-		setTimeout(connectWithRetry, 5000)
-	})
-};
-
-connectWithRetry();
-
+mongoose.connect('mongodb+srv://<"romanjedras@o2.pl">:<"beaf7CDQW123">@cluster0-g742u.mongodb.net/test?retryWrites=true&w=majority', {
+	useMongoClient: true
+}).then(()=>{
+	console.log('MongoDB is connected')
+}).catch(err=>{
+	console.log('MongoDB connection unsuccessful, retry after 5 seconds.');
+	setTimeout(connectWithRetry, 5000)
+});
 
 //new user Schema
 const userSchema = new Schema({
