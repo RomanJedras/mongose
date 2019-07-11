@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
+const MongoClient = require('mongodb').Mongoose;
 const Schema = mongoose.Schema;
 
 mongoose.Promise = global.Promise;
 
 const uri = "mongodb+srv://romanjedras:beaf7CDQW123@cluster0-g742u.mongodb.net/test?retryWrites=true&w=majority";
 
-mongoose.connect(uri, {
-	useMongoClient: true
-}).then(()=>{
-	console.log('MongoDB is connected')
-}).catch(err=>{
-	console.log('MongoDB connection unsuccessful, retry after 5 seconds.');
-	setTimeout(connectWithRetry, 5000)
+const client = new MongoClient(uri, { useNewUrlParser: true });
+client.connect(err => {
+	const collection = client.db("test").collection("devices");
+	// perform actions on the collection object
+	client.close();
 });
 
 //new user Schema
@@ -48,7 +47,7 @@ userSchema.pre('save', function(next) {
 	next();
 });
 
-const User = mongoose.model('User', userSchema);
+const User = client.model('User', userSchema);
 const kenny = new User({
 	name: 'Kenny',
 	username: 'Kenny_the_boy',
