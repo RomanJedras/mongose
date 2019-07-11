@@ -3,7 +3,9 @@ const Schema = mongoose.Schema;
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb+srv://<"romanjedras@o2.pl">:<"beaf7CDQW123">@cluster0-g742u.mongodb.net/test?retryWrites=true&w=majority', {
+const uri = "mongodb+srv://romanjedras:beaf7CDQW123@cluster0-g742u.mongodb.net/test?retryWrites=true&w=majority";
+
+mongoose.connect(uri, {
 	useMongoClient: true
 }).then(()=>{
 	console.log('MongoDB is connected')
