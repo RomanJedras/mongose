@@ -1,20 +1,19 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 const dotenv = require('dotenv');
-
+const Schema = mongoose.Schema;
+mongoose.Promise = global.Promise;
 
 dotenv.config({ path: './config.env' });
-const DB = process.env.DATABASE.replace('' +
-	'<PASSWORD>',
-	process.env.DATABASE_PASSWORD);
+
+const DB = process.env.DATABASE.replace('' + '<dbuser>', process.env.USENAME).replace(''+'<dbpassword>',process.env.DATABASE_PASSWORD);
 
 
-mongoose.Promise = global.Promise;
 mongoose.connect(DB, {
-	useNewUrlParser: true,
-	useCreateIndex:true,
-	useFindAndModify: false
+	useNewUrlParser: true
 });
+
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 
 //new user Schema
 const userSchema = new Schema({
@@ -121,7 +120,7 @@ const updateUsername = function() {
 	return User.findOneAndUpdate({ username: 'Benny_the_boy' }, { username: 'Benny_the_man' }, { new: true }, function(err, user) {
 		if (err) throw err;
 		
-	//	console.log('Nazwa uzytkownika po aktualizacji to ' + user.username);
+		console.log('Nazwa uzytkownika po aktualizacji to ' + user.username);
 	})
 }
 
@@ -164,3 +163,10 @@ Promise.all([kenny.save(), mark.save(), benny.save()])
 .then(findKennyAndDelete)
 .then(findBennyAndRemove)
 .catch(console.log.bind(console))
+
+
+
+
+
+
+
