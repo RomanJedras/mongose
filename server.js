@@ -1,30 +1,23 @@
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const express = require('express');
+const Schema = mongoose.Schema;
+const dotenv = require('dotenv');
 
-const app = express();
 
 dotenv.config({ path: './config.env' });
-
 const DB = process.env.DATABASE.replace('' +
 	'<PASSWORD>',
 	process.env.DATABASE_PASSWORD);
 
-mongoose.connect(DB,{
+
+mongoose.Promise = global.Promise;
+mongoose.connect(DB, {
 	useNewUrlParser: true,
 	useCreateIndex:true,
 	useFindAndModify: false
-}).then(con=>{
-	console.log(con.connections);
-	console.log('DB connection succesfull');
 });
 
-const Schema = mongoose.Schema;
-
-mongoose.Promise = global.Promise;
-
 //new user Schema
-const userTestSchema = new Schema({
+const userSchema = new Schema({
 	name: String,
 	username: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
@@ -34,14 +27,14 @@ const userTestSchema = new Schema({
 });
 
 //Mongoose schema method
-userTestSchema.methods.manify = function(next) {
+userSchema.methods.manify = function(next) {
 	this.name = this.name + '-boy';
 	
 	return next(null, this.name);
 };
 
 //pre-save method
-userTestSchema.pre('save', function(next) {
+userSchema.pre('save', function(next) {
 	//pobranie aktualnego czasu
 	const currentDate = new Date();
 	
@@ -55,7 +48,7 @@ userTestSchema.pre('save', function(next) {
 });
 
 //model based on userSchema
-const User = mongoose.model('User', userTestSchema);
+const User = mongoose.model('User', userSchema);
 
 //instancje klasy User
 const kenny = new User({
@@ -128,7 +121,7 @@ const updateUsername = function() {
 	return User.findOneAndUpdate({ username: 'Benny_the_boy' }, { username: 'Benny_the_man' }, { new: true }, function(err, user) {
 		if (err) throw err;
 		
-		console.log('Nazwa uzytkownika po aktualizacji to ' + user.username);
+	//	console.log('Nazwa uzytkownika po aktualizacji to ' + user.username);
 	})
 }
 
@@ -171,9 +164,3 @@ Promise.all([kenny.save(), mark.save(), benny.save()])
 .then(findKennyAndDelete)
 .then(findBennyAndRemove)
 .catch(console.log.bind(console))
-
-const port = process.env.PORT || 3000;
-
- app.listen(port,'127.0.0.1',()=>{
- 	console.log(`App running on port ${port}...`);
- });
