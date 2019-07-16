@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 const Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
 
-dotenv.config({ path: './.gitignore' });
+dotenv.config({ path: './config.env' });
 
 const replaceTemplate = require('./modules/replaceTemplate');
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
