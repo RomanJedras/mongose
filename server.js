@@ -216,7 +216,12 @@ Promise.all([kenny.save(), mark.save(), benny.save()])
 .then(findMarkAndDelete)
 .then(findKennyAndDelete)
 .then(findBennyAndRemove)
-.catch(console.log.bind(console))
+.catch(console.log.bind(console));
+
+
+server.listen('3000', '127.0.0.1', () => {
+	console.log('Listening to request on port 3000')
+});
 
 
 
