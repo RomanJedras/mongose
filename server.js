@@ -174,7 +174,7 @@ const updateUsername = function() {
 	return User.findOneAndUpdate({ username: 'Benny_the_boy' }, { username: 'Benny_the_man' }, { new: true }, function(err, user) {
 		if (err) throw err;
 		
-		console.log('Nazwa uzytkownika po aktualizacji to ' + user.username);
+		//console.log('Nazwa uzytkownika po aktualizacji to ' + user.username);
 	})
 }
 
