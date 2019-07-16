@@ -1,14 +1,19 @@
 const mongoose = require('mongoose');
-const http = require('http');
+const express = require('express');
 const fs = require('fs');
-const url = require('url');
 const dotenv = require('dotenv');
+const replaceTemplate = require('./modules/replaceTemplate');
+
+
 const Schema = mongoose.Schema;
 mongoose.Promise = global.Promise;
 
+const app = express();
+
+
 dotenv.config({ path: './config.env' });
 
-const replaceTemplate = require('./modules/replaceTemplate');
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 
 const tempOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, 'utf-8');
@@ -18,44 +23,57 @@ const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.htm
 const dataObj = JSON.parse(data);
 
 
-const server = http.createServer((req, res) => {
-	const {query, pathname} = url.parse(req.url, true);
+
+
+app.get('/', (req, res) => {
+	res.writeHead('200', {
+		'Content-type': 'text/html',
+	});
 	
-	if (pathname === '/' || pathname === '/overview') {
-		
-		res.writeHead('200', {
-			'Content-type': 'text/html',
-		});
-		
-		const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
-		const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
-		res.end(output)
-		
-		
-		// Product page
-	} else if (pathname === '/product') {
-		res.writeHead('200', {
-			'Content-type': 'text/html',
-		});
-		const product = dataObj[query.id];
-		const output = replaceTemplate(tempProduct, product);
-		res.end(output)
-		
-	} else if (pathname === '/api') {
-		res.writeHead('200', {
-			'Content-type': 'application/json',
-		});
-		res.end(data);
-		
-	} else {
-		res.writeHead('404', {
-			'Content-type': 'text/html',
-			'my-own-header': 'hello-world'
-		});
-		res.end("<h1>404: Page not found</h1>")
-	}
+	 const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
+	 const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
+	 res.end(output)
 });
 
+app.get('/overview', (req, res) => {
+	res.writeHead('200', {
+		'Content-type': 'text/html',
+	});
+	
+	const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join('');
+	const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
+	res.end(output)
+});
+
+app.get('/product', (req, res) => {
+	res.writeHead('200', {
+		'Content-type': 'text/html',
+	});
+	
+	const product = dataObj[req.query.id];
+	const output = replaceTemplate(tempProduct, product);
+	res.end(output)
+	
+});
+
+
+app.get('/api', (req, res) => {
+	res.writeHead('200', {
+		'Content-type': 'text/html',
+	});
+	
+	res.end(data);
+	
+});
+
+app.get('/*', (req, res) => {
+	
+	res.writeHead('404', {
+		'Content-type': 'text/html',
+		'my-own-header': 'hello-world'
+	});
+	res.end("<h1>404: Page not found</h1>")
+});
 
 
 
@@ -82,21 +100,21 @@ const userSchema = new Schema({
 //Mongoose schema method
 userSchema.methods.manify = function(next) {
 	this.name = this.name + '-boy';
-	
+
 	return next(null, this.name);
 };
-
-//pre-save method
+//
+// //pre-save method
 userSchema.pre('save', function(next) {
-	//pobranie aktualnego czasu
+// 	//pobranie aktualnego czasu
 	const currentDate = new Date();
-	
+
 	//zmiana pola na aktualny czas
 	this.updated_at = currentDate;
-	
+
 	if (!this.created_at)
 		this.created_at = currentDate;
-	
+
 	next();
 });
 
@@ -163,7 +181,7 @@ const updadeUserPassword = function() {
 		console.log('New password is ' + user.password);
 		return user.save(function(err) {
 			if (err) throw err;
-			
+
 			console.log('Uzytkownik ' + user.name + ' zostal pomyslnie zaktualizowany');
 		})
 	})
@@ -173,7 +191,7 @@ const updateUsername = function() {
 	// update username
 	return User.findOneAndUpdate({ username: 'Benny_the_boy' }, { username: 'Benny_the_man' }, { new: true }, function(err, user) {
 		if (err) throw err;
-		
+
 		//console.log('Nazwa uzytkownika po aktualizacji to ' + user.username);
 	})
 }
@@ -219,10 +237,8 @@ Promise.all([kenny.save(), mark.save(), benny.save()])
 .catch(console.log.bind(console));
 
 
-server.listen('3000', '127.0.0.1', () => {
-	console.log('Listening to request on port 3000')
-});
-
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 
 
